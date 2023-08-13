@@ -1,0 +1,213 @@
+{
+  "version": "0.10.0",
+  "graph": {
+    "nodes": [],
+    "relationships": []
+  },
+  "dataModel": {
+    "configurations": {
+      "idsToIgnore": []
+    },
+    "fileModel": {
+      "fileSchemas": {
+        "products.csv": {
+          "expanded": true,
+          "fields": [
+            {
+              "name": "productID",
+              "type": "integer",
+              "sample": "1",
+              "include": true
+            },
+            {
+              "name": "productName",
+              "type": "string",
+              "sample": "Chai",
+              "include": true
+            },
+            {
+              "name": "supplierID",
+              "type": "integer",
+              "sample": "1",
+              "include": true
+            },
+            {
+              "name": "categoryID",
+              "type": "integer",
+              "sample": "1",
+              "include": true
+            },
+            {
+              "name": "quantityPerUnit",
+              "type": "string",
+              "sample": "10 boxes x 20 bags",
+              "include": true
+            },
+            {
+              "name": "unitPrice",
+              "type": "float",
+              "sample": "18.00",
+              "include": true
+            },
+            {
+              "name": "unitsInStock",
+              "type": "integer",
+              "sample": "39",
+              "include": true
+            },
+            {
+              "name": "unitsOnOrder",
+              "type": "integer",
+              "sample": "0",
+              "include": true
+            },
+            {
+              "name": "reorderLevel",
+              "type": "integer",
+              "sample": "10",
+              "include": true
+            },
+            {
+              "name": "discontinued",
+              "type": "boolean",
+              "sample": "0",
+              "include": true
+            }
+          ]
+        },
+        "orders.csv": {
+          "expanded": true,
+          "fields": [
+            {
+              "name": "orderID",
+              "type": "integer",
+              "sample": "10248",
+              "include": true
+            },
+            {
+              "name": "customerID",
+              "type": "string",
+              "sample": "VINET",
+              "include": true
+            },
+            {
+              "name": "employeeID",
+              "type": "integer",
+              "sample": "5",
+              "include": true
+            },
+            {
+              "name": "orderDate",
+              "type": "string",
+              "sample": "1996-07-04 00:00:00.000",
+              "include": true
+            },
+            {
+              "name": "requiredDate",
+              "type": "string",
+              "sample": "1996-08-01 00:00:00.000",
+              "include": true
+            },
+            {
+              "name": "shippedDate",
+              "type": "string",
+              "sample": "1996-07-16 00:00:00.000",
+              "include": true
+            },
+            {
+              "name": "shipVia",
+              "type": "integer",
+              "sample": "3",
+              "include": true
+            },
+            {
+              "name": "freight",
+              "type": "float",
+              "sample": "32.38",
+              "include": true
+            },
+            {
+              "name": "shipName",
+              "type": "string",
+              "sample": "Vins et alcools Chevalier",
+              "include": true
+            },
+            {
+              "name": "shipAddress",
+              "type": "string",
+              "sample": "59 rue de l'Abbaye",
+              "include": true
+            },
+            {
+              "name": "shipCity",
+              "type": "string",
+              "sample": "Reims",
+              "include": true
+            },
+            {
+              "name": "shipRegion",
+              "type": "string",
+              "sample": "NULL",
+              "include": true
+            },
+            {
+              "name": "shipPostalCode",
+              "type": "string",
+              "sample": "51100",
+              "include": true
+            },
+            {
+              "name": "shipCountry",
+              "type": "string",
+              "sample": "France",
+              "include": true
+            }
+          ]
+        },
+        "order-details.csv": {
+          "expanded": true,
+          "fields": [
+            {
+              "name": "orderID",
+              "type": "integer",
+              "sample": "10248",
+              "include": true
+            },
+            {
+              "name": "productID",
+              "type": "integer",
+              "sample": "11",
+              "include": true
+            },
+            {
+              "name": "unitPrice",
+              "type": "float",
+              "sample": "14.00",
+              "include": true
+            },
+            {
+              "name": "quantity",
+              "type": "integer",
+              "sample": "12",
+              "include": true
+            },
+            {
+              "name": "discount",
+              "type": "float",
+              "sample": "0",
+              "include": true
+            }
+          ]
+        }
+      }
+    },
+    "graphModel": {
+      "nodeSchemas": {},
+      "relationshipSchemas": {}
+    },
+    "mappingModel": {
+      "nodeMappings": {},
+      "relationshipMappings": {}
+    }
+  }
+}
