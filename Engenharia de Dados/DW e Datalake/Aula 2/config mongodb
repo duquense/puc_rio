@@ -51,10 +51,10 @@ db.tweets.find({username:'user1'},{likes:1})
 db.tweets.updateMany({username:'user1'},{$inc:{likes:2}})
 
 <!-- O comando $set transformou o parametro em string, atenção -->
-
+<!-- Testar com dot notation -> "tweets.likes":{$inc:5} -->
 db.tweets.updateMany(
     {username:'user1'},
-    $set: {likes: {$inc: 5}}
+    $set: {likes: {$inc: 5}}    
 )
 
 <!-- 4. Remoção de todos os tweets de user3 com número de likes menor que 10. -->
