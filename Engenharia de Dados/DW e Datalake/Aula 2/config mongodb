@@ -1,2 +1,66 @@
 Username: raphaelmageste
 Password: 6yhRkeGhSZX54S5R
+
+Linha de CMD:
+mongosh "mongodb+srv://cluster0-puc-datalake.itq6sgg.mongodb.net/" --apiVersion 1 --username raphaelmageste
+
+<!-- ----- Prática Mongo DB ------- -->
+
+show databases
+use twitter
+
+<!-- 1. Pesquisa pelos tweets com número de likes maior ou igual a 10; -->
+
+<!-- Maior que 5: -->
+db.tweets.find ( {likes: {$gt: 5} } ) 
+
+<!-- Maior ou igual a 5: -->
+db.tweets.find ( {likes: {$gte: 5} } ) 
+
+<!-- Menor que = $lt , Menor ou igual que = $lte  -->
+db.tweets.find ( {likes: {$lte: 10} } )
+
+<!-- Operador $in e $nin (not in) -->
+db.tweets.find ({likes:{$in:[5,10]}})
+
+
+<!-- 2. Inserção de 50 tweets, usando somente os usuários user1, user2 e user3, mas variando o texto e o número de likes, que pode ser um número qualquer entre 1 e 100; -->
+
+db.tweets.insertMany(
+    [
+        {id:55,username:'user1',tweet:'oki doki',likes:3},
+        {id:56,username:'user1',tweet:'sadasd',likes:70},
+        {id:54,username:'user1',tweet:'blalbalbla',likes:6},
+        {id:57,username:'user1',tweet:'eu heinn',likes:4},
+        {id:58,username:'user1',tweet:'curuzes',likes:79},
+        {id:59,username:'user1',tweet:'ZIKA',likes:17},
+        {id:46,username:'user2',tweet:'#tenso',likes:41},
+        {id:47,username:'user2',tweet:'brabo',likes:33},
+        {id:48,username:'user2',tweet:'audio',likes:18},
+        {id:49,username:'user2',tweet:'manda',likes:2}
+    ]
+)
+
+<!-- 3. Atualização de todos os tweets do user1, somando-se 5 ao número de likes correspondente; -->
+
+<!-- Listando todos os documentos de username = user1, mas com apenas o campo like.
+= SELECT likes FROM tweets WHERE username = 'user1' -->
+
+db.tweets.find({username:'user1'},{likes:1})
+
+db.tweets.updateMany({username:'user1'},{$inc:{likes:2}})
+
+<!-- O comando $set transformou o parametro em string, atenção -->
+
+db.tweets.updateMany(
+    {username:'user1'},
+    $set: {likes: {$inc: 5}}
+)
+
+<!-- 4. Remoção de todos os tweets de user3 com número de likes menor que 10. -->
+
+<!-- SELECT likes, username FROM tweets WHERE username = 'user3' and likes < 10  -->
+db.tweets.find({username:'user3',likes:{$lt:10}},{likes:1,username:1})
+
+db.tweets.deleteMany({username:'user3',likes:{$lt:10}})
+
