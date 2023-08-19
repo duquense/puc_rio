@@ -1,0 +1,8 @@
+import pandas as pd
+
+# Carregar o JSON diretamente em um DataFrame e salvar como CSV
+df = pd.read_json('puc_rio/Engenharia de Dados/DW e Datalake/Aula 2/tweets.json')
+df.to_csv('puc_rio/Engenharia de Dados/DW e Datalake/Aula 2/Neo4j/tweets.csv', index=False, encoding='utf-8')
+
+df = pd.read_json('puc_rio/Engenharia de Dados/DW e Datalake/Aula 2/users.json')
+df.to_csv('puc_rio/Engenharia de Dados/DW e Datalake/Aula 2/Neo4j/users.csv', index=False, encoding='utf-8')

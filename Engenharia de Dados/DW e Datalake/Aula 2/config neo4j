@@ -1,3 +1,19 @@
 username: neo4j
 
 password: JTiIiF9Daj4hvplQVnoikG7benhcczhRhfez3ZKZUvs
+
+------ Prática Mão na Massa -----
+
+Utilizando os arquivos tweets.json e users.json, crie um modelo de grafo que associe users e tweets. Em seguida, utilize a linguagem Cypher para executar as seguintes ações:
+
+1. Contar a quantidade de tweets enviados por cada usuário;
+
+
+
+2. Atualizar o número de likes de um tweet específico com base no 'id';
+
+
+
+
+3. Recuperar todos os tweets com no mínimo 10 likes.
+
