@@ -1,0 +1,32 @@
+
+# raphael_mageste@cluster-35b0-puc-m:~$ pyspark
+
+dfTweets = spark.read.option("inferSchema",True).option("header",True).csv("/user/dataproc/datasets/tweets.csv")
+dfTweets.printSchema()
+
+dfTweets.write.saveAsTable("Tweets")
+
+spark.sql("SELECT Sentiment, COUNT(*) FROM Tweets GROUP BY Sentiment").show()
+
+from pyspark.sql import HiveContext
+hiveContext = HiveContext(sc)
+
+hiveQuery = "SELECT SentimentText FROM Tweets WHERE Sentiment ='pos';"
+dfpos = df = hiveContext.sql(hiveQuery)
+rddpos = dfpos.rdd
+stopWords = ['i', 'me', 'my', 'myself','we','our','ours','ourselves','you','your','yours','yourself','he','him','his',
+'she','her','hers','it','its','they','them','the','their','what','which','who','this','that','am','is','are','was',
+'were','be','been','have','has','had','do','does','did','doing','a','an','and','but','if','or','because','as','of',
+'at','by','for','with','into','in','out','to','on','off','up','down','then','once','here','again','when','where',
+'why','how','all','any','each','few','more','most','other','some','such','no','nor','not','own','only','same','so',
+'than','too','very','can','will','just','don','t','s','should','now','get','u','know','like','love','good','bad']
+
+
+contadorPalavras = rddpos.map(lambda x:x.SentimentText.replace(',','').replace('.',' ').replace('-','').lower()) \
+.flatMap(lambda x: x.split()).filter(lambda x: x not in stopWords) \
+.map(lambda x: (x,1)) \
+.reduceByKey(lambda x,y:x+y) \
+.map(lambda x: (x[1],x[0])) \
+.sortByKey(False)
+
+contadorPalavras.take(20)
