@@ -1,0 +1,22 @@
+curl -L https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv | gsutil cp - gs://mvpengenhariadedados/spi_matches_2.csv
+
+
+gs://mvpengenhariadedados
+
+https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv
+
+mvp-eng-dados-temp
+
+
+curl -L https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv | gsutil cp - gs://mvpengenhariadedados/spi_matches_2.csv
+
+
+SELECT A.league_id, B.ZEBRAS, count(*) as TOTAL, B.ZEBRAS/count(*) as PCT FROM `mvp-puc.Teste538.Matches` A
+LEFT JOIN
+(SELECT league_id, count(*) as ZEBRAS FROM `mvp-puc.Teste538.Matches` WHERE score1>score2 and prob1<0.36 group by league_id) B
+ON A.league_id = B.league_id
+group by A.league_id, B.ZEBRAS
+order by PCT desc
+
+
+data fusion -> mvp-eng-dados

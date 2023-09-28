@@ -1,0 +1,318 @@
+{
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.8.3",
+        "scope": "SYSTEM"
+    },
+    "description": "Extração e Transformação de da dimensão de Ligas",
+    "name": "Dimensao_Ligas_v1",
+    "change": {
+        "description": ""
+    },
+    "parentVersion": "-SNAPSHOT",
+    "config": {
+        "resources": {
+            "memoryMB": 2048,
+            "virtualCores": 1
+        },
+        "driverResources": {
+            "memoryMB": 2048,
+            "virtualCores": 1
+        },
+        "connections": [
+            {
+                "from": "Matches_Latest",
+                "to": "Wrangler"
+            },
+            {
+                "from": "Wrangler",
+                "to": "Distinct"
+            },
+            {
+                "from": "Distinct",
+                "to": "Joiner"
+            },
+            {
+                "from": "Joiner",
+                "to": "BigQuery"
+            },
+            {
+                "from": "Matches",
+                "to": "Wrangler"
+            },
+            {
+                "from": "Matches_International",
+                "to": "Wrangler"
+            },
+            {
+                "from": "Global_Rankings",
+                "to": "Joiner"
+            }
+        ],
+        "comments": [],
+        "postActions": [],
+        "properties": {},
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "stages": [
+            {
+                "name": "Matches_Latest",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "Matches_Latest",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "referenceName": "mvpengenhariadedados.spi_matches_latest.csv",
+                        "path": "gs://mvpengenhariadedados/spi_matches_latest.csv",
+                        "format": "csv",
+                        "sampleSize": "1000",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "ignoreNonExistingFolders": "false",
+                        "encrypted": "false",
+                        "fileEncoding": "UTF-8",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                        "enableQuotedValues": "false",
+                        "skipHeader": "true",
+                        "connection": "${conn(Cloud Storage Default)}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                "id": "Matches_Latest"
+            },
+            {
+                "name": "Wrangler",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "Wrangler",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "4.8.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "*",
+                        "precondition": "false",
+                        "directives": "keep :league_id,:league\ncopy :league :league_country true\nfind-and-replace :league_country s/Chinese Super League/China/g\nfind-and-replace :league_country s/NWSL Challenge Cup/USA/g\nfind-and-replace :league_country s/Mexican Primera Division Torneo Apertura/Mexico/g\nfind-and-replace :league_country s/Danish SAS-Ligaen/Denmark/g\nfind-and-replace :league_country s/Russian Premier Liga/Russia/g\nfind-and-replace :league_country s/German 2. Bundesliga/Germany/g\nfind-and-replace :league_country s/Swiss Raiffeisen Super League/Switzerland/g\nfind-and-replace :league_country s/Austrian T-Mobile Bundesliga/Austria/g\nfind-and-replace :league_country s/Belgian Jupiler League/Belgium/g\nfind-and-replace :league_country s/English League Championship/England/g\nfind-and-replace :league_country s/Scottish Premiership/Scotland/g\nfind-and-replace :league_country s/French Ligue 2/France/g\nfind-and-replace :league_country s/English League Two/England/g\nfind-and-replace :league_country s/English League One/England/g\nfind-and-replace :league_country s/South African ABSA Premier League/South Africa/g\nfind-and-replace :league_country s/Turkish Turkcell Super Lig/Turkey/g\nfind-and-replace :league_country s/Dutch Eredivisie/Netherlands/g\nfind-and-replace :league_country s/German Bundesliga/Germany/g\nfind-and-replace :league_country s/French Ligue 1/France/g\nfind-and-replace :league_country s/Barclays Premier League/England/g\nfind-and-replace :league_country s/Portuguese Liga/Portugal/g\nfind-and-replace :league_country s/Italy Serie B/Italy/g\nfind-and-replace :league_country s/Spanish Segunda Division/Spain/g\nfind-and-replace :league_country s/Spanish Primera Division/Spain/g\nfind-and-replace :league_country s/Italy Serie A/Italy/g\nfind-and-replace :league_country s/Greek Super League/Greece/g\nfind-and-replace :league_country s/UEFA Champions League/Europe/g\nfind-and-replace :league_country s/UEFA Europa Conference League/Europe/g\nfind-and-replace :league_country s/UEFA Europa League/Europe/g\nfind-and-replace :league_country s/FA Women's Super League/England/g\nfind-and-replace :league_country s/Australian A-League/Australia/g\nfind-and-replace :league_country s/Mexican Primera Division Torneo Clausura/Mexico/g\nfind-and-replace :league_country s/Argentina Primera Division/Argentina/g\nfind-and-replace :league_country s/Japanese J League/Japan/g\nfind-and-replace :league_country s/Major League Soccer/USA/g\nfind-and-replace :league_country s/United Soccer League/USA/g\nfind-and-replace :league_country s/National Women's Soccer League/USA/g\nfind-and-replace :league_country s/Swedish Allsvenskan/Sweden/g\nfind-and-replace :league_country s/Norwegian Tippeligaen/Norway/g\nfind-and-replace :league_country s/Brasileiro SÃ©rie A/Brazil/g\nfind-and-replace :league s/Brasileiro SÃ©rie A/Brasileiro Serie A/g",
+                        "on-error": "fail-pipeline",
+                        "schema": "{\"type\":\"record\",\"name\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]}]}",
+                        "workspaceId": "b3243049-30e7-4bb7-9f78-118fc4fd8aaa"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Matches_Latest",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}"
+                    },
+                    {
+                        "name": "Matches",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}"
+                    },
+                    {
+                        "name": "Matches_International",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "id": "Wrangler"
+            },
+            {
+                "name": "Distinct",
+                "plugin": {
+                    "name": "Distinct",
+                    "type": "batchaggregator",
+                    "label": "Distinct",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "2.10.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {}
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]}]}",
+                "inputSchema": "{\"type\":\"record\",\"name\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]}]}",
+                "id": "Distinct"
+            },
+            {
+                "name": "Joiner",
+                "plugin": {
+                    "name": "Joiner",
+                    "type": "batchjoiner",
+                    "label": "Joiner",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "2.10.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "selectedFields": "Distinct.league_id as league_id,Distinct.league as league,Distinct.league_country as league_country,Global_Rankings.confed as confed",
+                        "requiredInputs": "Distinct,Global_Rankings",
+                        "conditionType": "basic",
+                        "joinKeys": "Distinct.league_country = Global_Rankings.name",
+                        "joinNullKeys": "true",
+                        "distributionEnabled": "false",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"confed\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                },
+                "outputSchema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"confed\",\"type\":[\"string\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Distinct",
+                        "schema": "{\"type\":\"record\",\"name\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]}]}"
+                    },
+                    {
+                        "name": "Global_Rankings",
+                        "schema": "{\"type\":\"record\",\"name\":\"text\",\"fields\":[{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"confed\",\"type\":\"string\"},{\"name\":\"off\",\"type\":\"string\"},{\"name\":\"def\",\"type\":\"string\"},{\"name\":\"spi\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "id": "Joiner"
+            },
+            {
+                "name": "BigQuery",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "BigQuery",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "connection": "${conn(BigQuery Default)}",
+                        "dataset": "Teste538",
+                        "table": "Leagues",
+                        "operation": "insert",
+                        "allowSchemaRelaxation": "true",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitioningType": "TIME",
+                        "partitionFilterRequired": "false",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"confed\",\"type\":[\"string\",\"null\"]}]}",
+                        "bucket": "mvp-eng-dados-temp",
+                        "relationTableKey": "key",
+                        "truncateTable": "false"
+                    }
+                },
+                "outputSchema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"confed\",\"type\":[\"string\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Joiner",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_country\",\"type\":[\"string\",\"null\"]},{\"name\":\"confed\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "id": "BigQuery"
+            },
+            {
+                "name": "Matches",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "Matches",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "referenceName": "mvpengenhariadedados.spi_matches.csv",
+                        "path": "gs://mvpengenhariadedados/spi_matches.csv",
+                        "format": "csv",
+                        "sampleSize": "1000",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "ignoreNonExistingFolders": "false",
+                        "encrypted": "false",
+                        "fileEncoding": "UTF-8",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                        "enableQuotedValues": "false",
+                        "skipHeader": "true",
+                        "connection": "${conn(Cloud Storage Default)}"
+                    }
+                },
+                "outputSchema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                "id": "Matches"
+            },
+            {
+                "name": "Matches_International",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "Matches_International",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "referenceName": "mvpengenhariadedados.spi_matches_intl.csv",
+                        "path": "gs://mvpengenhariadedados/spi_matches_intl.csv",
+                        "format": "csv",
+                        "sampleSize": "1000",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "ignoreNonExistingFolders": "false",
+                        "encrypted": "false",
+                        "fileEncoding": "UTF-8",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                        "enableQuotedValues": "false",
+                        "skipHeader": "true",
+                        "connection": "${conn(Cloud Storage Default)}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                "id": "Matches_International"
+            },
+            {
+                "name": "Global_Rankings",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "Global_Rankings",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "referenceName": "mvpengenhariadedados.spi_global_rankings_intl.csv",
+                        "path": "gs://mvpengenhariadedados/spi_global_rankings_intl.csv",
+                        "format": "csv",
+                        "sampleSize": "1000",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "ignoreNonExistingFolders": "false",
+                        "encrypted": "false",
+                        "fileEncoding": "UTF-8",
+                        "schema": "{\"type\":\"record\",\"name\":\"text\",\"fields\":[{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"confed\",\"type\":\"string\"},{\"name\":\"off\",\"type\":\"string\"},{\"name\":\"def\",\"type\":\"string\"},{\"name\":\"spi\",\"type\":\"string\"}]}",
+                        "enableQuotedValues": "false",
+                        "skipHeader": "true",
+                        "connection": "${conn(Cloud Storage Default)}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"text\",\"fields\":[{\"name\":\"rank\",\"type\":\"int\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"confed\",\"type\":\"string\"},{\"name\":\"off\",\"type\":\"string\"},{\"name\":\"def\",\"type\":\"string\"},{\"name\":\"spi\",\"type\":\"string\"}]}",
+                "id": "Global_Rankings"
+            }
+        ],
+        "schedule": "0 1 */1 * *",
+        "engine": "spark",
+        "numOfRecordsPreview": 100,
+        "rangeRecordsPreview": {
+            "min": 1,
+            "max": "5000"
+        },
+        "description": "Extração e Transformação de da dimensão de Ligas",
+        "maxConcurrentRuns": 1
+    }
+}

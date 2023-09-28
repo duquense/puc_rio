@@ -1,0 +1,340 @@
+{
+    "name": "Fato_Matches_v6",
+    "description": "Extração e Transformação de Dados das partidas presentes nos arquivops matches.csv",
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.8.3",
+        "scope": "SYSTEM"
+    },
+    "config": {
+        "resources": {
+            "memoryMB": 2048,
+            "virtualCores": 1
+        },
+        "driverResources": {
+            "memoryMB": 2048,
+            "virtualCores": 1
+        },
+        "connections": [
+            {
+                "from": "Matches_Latest",
+                "to": "Formato de Colunas"
+            },
+            {
+                "from": "Formato de Colunas",
+                "to": "NullFieldSplitter"
+            },
+            {
+                "from": "NullFieldSplitter",
+                "to": "Distinct",
+                "port": "nonnull"
+            },
+            {
+                "from": "Distinct",
+                "to": "BigQuery"
+            },
+            {
+                "from": "NullFieldSplitter",
+                "to": "Erros",
+                "port": "null"
+            },
+            {
+                "from": "Matches",
+                "to": "Formato de Colunas"
+            },
+            {
+                "from": "Matches_International",
+                "to": "Formato de Colunas"
+            }
+        ],
+        "comments": [],
+        "postActions": [],
+        "properties": {},
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "stages": [
+            {
+                "name": "Matches_Latest",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "Matches_Latest",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "referenceName": "mvpengenhariadedados.spi_matches_latest.csv",
+                        "path": "gs://mvpengenhariadedados/spi_matches_latest.csv",
+                        "format": "csv",
+                        "sampleSize": "1000",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "ignoreNonExistingFolders": "false",
+                        "encrypted": "false",
+                        "fileEncoding": "UTF-8",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                        "enableQuotedValues": "false",
+                        "skipHeader": "true",
+                        "connection": "${conn(Cloud Storage Default)}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                "id": "Matches_Latest",
+                "type": "batchsource",
+                "label": "Matches_Latest",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "Formato de Colunas",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "Formato de Colunas",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "4.8.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "*",
+                        "precondition": "false",
+                        "directives": "set-type :xg1 double\nset-type :xg2 double\nset-type :adj_score1 double\nset-type :adj_score2 double\ncopy :date :key true\nset-column :key key+\"|\"+league_id+\"|\"+team1+\"|\"+team2\nset-type :spi1 double\nset-type :spi2 double\nset-type :prob1 double\nset-type :prob2 double\nset-type :probtie double\nset-type :league_id string\ndrop :league\ndrop :proj_score1\ndrop :proj_score2\ndrop :importance1\ndrop :importance2\ndrop :nsxg1\ndrop :nsxg2\nparse-as-simple-date :date yyyy-MM-dd",
+                        "on-error": "send-to-error-port",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}",
+                        "workspaceId": "c91a5934-7ef8-48d1-8306-7e296414f319"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Matches_Latest",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}"
+                    },
+                    {
+                        "name": "Matches",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}"
+                    },
+                    {
+                        "name": "Matches_International",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "id": "Formato-de-Colunas",
+                "type": "transform",
+                "label": "Formato de Colunas",
+                "icon": "icon-DataPreparation"
+            },
+            {
+                "name": "NullFieldSplitter",
+                "plugin": {
+                    "name": "NullFieldSplitter",
+                    "type": "splittertransform",
+                    "label": "NullFieldSplitter",
+                    "artifact": {
+                        "name": "transform-plugins",
+                        "version": "2.10.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "score1",
+                        "modifySchema": "true"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Formato de Colunas",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ],
+                "id": "NullFieldSplitter",
+                "type": "splittertransform",
+                "label": "NullFieldSplitter",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "Distinct",
+                "plugin": {
+                    "name": "Distinct",
+                    "type": "batchaggregator",
+                    "label": "Distinct",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "2.10.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {}
+                },
+                "outputSchema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "NullFieldSplitter",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody.typenonnull\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":\"int\"},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ],
+                "id": "Distinct",
+                "type": "batchaggregator",
+                "label": "Distinct",
+                "icon": "icon-distinct"
+            },
+            {
+                "name": "BigQuery",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "BigQuery",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "connection": "${conn(BigQuery Default)}",
+                        "dataset": "Teste538",
+                        "table": "Matches",
+                        "operation": "insert",
+                        "allowSchemaRelaxation": "true",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitioningType": "NONE",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}",
+                        "bucket": "mvp-eng-dados-temp",
+                        "relationTableKey": "key",
+                        "truncateTable": "true"
+                    }
+                },
+                "outputSchema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Distinct",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ],
+                "id": "BigQuery",
+                "type": "batchsink",
+                "label": "BigQuery",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "Erros",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "Erros",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "connection": "${conn(BigQuery Default)}",
+                        "dataset": "Teste538",
+                        "table": "Erros",
+                        "bucket": "mvp-eng-dados-temp",
+                        "operation": "insert",
+                        "truncateTable": "true",
+                        "allowSchemaRelaxation": "true",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitioningType": "NONE",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "NullFieldSplitter",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"double\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"double\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"double\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"double\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"double\",\"null\"]}]}"
+                    }
+                ],
+                "id": "Erros",
+                "type": "batchsink",
+                "label": "Erros",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "Matches",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "Matches",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "referenceName": "mvpengenhariadedados.spi_matches.csv",
+                        "path": "gs://mvpengenhariadedados/spi_matches.csv",
+                        "format": "csv",
+                        "sampleSize": "1000",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "ignoreNonExistingFolders": "false",
+                        "encrypted": "false",
+                        "fileEncoding": "UTF-8",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                        "enableQuotedValues": "false",
+                        "skipHeader": "true",
+                        "connection": "${conn(Cloud Storage Default)}"
+                    }
+                },
+                "outputSchema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                "id": "Matches",
+                "type": "batchsource",
+                "label": "Matches",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "Matches_International",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "Matches_International",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.21.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "useConnection": "true",
+                        "referenceName": "mvpengenhariadedados.spi_matches_intl.csv",
+                        "path": "gs://mvpengenhariadedados/spi_matches_intl.csv",
+                        "format": "csv",
+                        "sampleSize": "1000",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "ignoreNonExistingFolders": "false",
+                        "encrypted": "false",
+                        "fileEncoding": "UTF-8",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                        "enableQuotedValues": "false",
+                        "skipHeader": "true",
+                        "connection": "${conn(Cloud Storage Default)}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"season\",\"type\":[\"int\",\"null\"]},{\"name\":\"date\",\"type\":[\"string\",\"null\"]},{\"name\":\"league_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"league\",\"type\":[\"string\",\"null\"]},{\"name\":\"team1\",\"type\":[\"string\",\"null\"]},{\"name\":\"team2\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi1\",\"type\":[\"string\",\"null\"]},{\"name\":\"spi2\",\"type\":[\"string\",\"null\"]},{\"name\":\"prob1\",\"type\":[\"double\",\"null\"]},{\"name\":\"prob2\",\"type\":[\"double\",\"null\"]},{\"name\":\"probtie\",\"type\":[\"double\",\"null\"]},{\"name\":\"proj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"proj_score2\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance1\",\"type\":[\"string\",\"null\"]},{\"name\":\"importance2\",\"type\":[\"string\",\"null\"]},{\"name\":\"score1\",\"type\":[\"int\",\"null\"]},{\"name\":\"score2\",\"type\":[\"int\",\"null\"]},{\"name\":\"xg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"xg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg1\",\"type\":[\"string\",\"null\"]},{\"name\":\"nsxg2\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score1\",\"type\":[\"string\",\"null\"]},{\"name\":\"adj_score2\",\"type\":[\"string\",\"null\"]}]}",
+                "id": "Matches_International",
+                "type": "batchsource",
+                "label": "Matches_International",
+                "icon": "fa-plug"
+            }
+        ],
+        "schedule": "0 1 */1 * *",
+        "engine": "spark",
+        "numOfRecordsPreview": 100,
+        "rangeRecordsPreview": {
+            "min": 1,
+            "max": "5000"
+        },
+        "description": "Extração e Transformação de Dados das partidas presentes nos arquivops matches.csv",
+        "maxConcurrentRuns": 1
+    },
+    "version": "-SNAPSHOT"
+}
