@@ -21,5 +21,8 @@ Como consenso da comunidade do jogo, pode-se imaginar que os atributos de veloci
 Além de uma extensa análise exploratória, são feitas também etapas de pré-processamento de dados, visando criar um dataset próprio para o desenvolvimento de um modelo de machine learning no futuro.
 
 
+[Link para o notebook no Google Colab](https://colab.research.google.com/drive/10Ykg2n0BaVe5Jd5IOmOxXIDmVD5nh9ok?usp=sharing)
+
+
 
  
