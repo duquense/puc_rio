@@ -5,6 +5,7 @@ Autor: Raphael Mageste Duque
 Descrição do conteúdo:
 
 - MVP_Analise_Dados_PUC_Rio_FIFA24.ipynb : notebook com a análise desenvolvida.
+- MVP_Analise_Dados_PUC_Rio_FIFA24.txt : link direto para o notebook no Google Colab.
 - Bases (pasta): folder com as bases utilizadas na análise.
 - Outros (pasta) : arquivos e imagens salvos ao longo do projeto.
 
