@@ -4,7 +4,7 @@ Autor: Raphael Mageste Duque
 
 Descrição do conteúdo:
 
-- MVP_Analise_Dados_PUC_Rio_FIFA24.ipynb : notebook com a análise desenvolvida.
+- MVP_Machine_learning_PUC_Rio_FIFA24.ipynb : notebook com o modelo desenvolvido.
 - MVP_Machine_Learning_PUC_Rio_FIFA24.txt : link direto para o notebook no Google Colab.
 - Bases (pasta): folder com as bases utilizadas na análise.
 - Outros (pasta) : arquivos e imagens salvos ao longo do projeto.
@@ -19,9 +19,9 @@ Busca-se responder a um problema de **classificação**, no qual queremos descob
 	Isto pode ser útil para avaliar e desenvolver novos talentos.
 
 
-O trabalho demonstra as etapas de pré-processamento e compara diferentes algoritmos de classificação. Ao final, se tem uma comparação da eficácia de cada modelo e a definição do modelo mais adequado para fazer o papel de "Treinador IA".
+O trabalho demonstra as etapas de pré-processamento e compara diferentes algoritmos de classificação. Ao final, se tem uma comparação da eficácia de cada modelo e a definição do modelo mais adequado para fazer o papel de "Treinador Inteligente (IA)".
 
-[Link para o notebook no Google Colab](https://colab.research.google.com/drive/10Ykg2n0BaVe5Jd5IOmOxXIDmVD5nh9ok?usp=sharing)
+[Link para o notebook no Google Colab](https://colab.research.google.com/drive/1L97G4juUPUJjeVx4B1ePR2-0PP8IRf-4?usp=sharing)
 
 
 
